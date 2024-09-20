@@ -511,7 +511,7 @@
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/datasets/blobfile')]",
-                "[concat(variables('factoryId'), '/pipelines/onYourData')]"
+                "[concat(variables('factoryId'), '/pipelines/patientReferral')]"
             ]
         },
         {
@@ -1661,7 +1661,7 @@
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/datasets/blob')]",
-                "[concat(variables('factoryId'), '/pipelines/onYourData')]",
+                "[concat(variables('factoryId'), '/pipelines/patientReferral')]",
                 "[concat(variables('factoryId'), '/pipelines/singleAnalyzeDocument')]",
                 "[concat(variables('factoryId'), '/datasets/blobfile')]"
             ]
