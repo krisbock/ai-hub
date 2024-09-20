@@ -244,7 +244,7 @@
             "apiVersion": "2018-06-01",
             "properties": {
                 "linkedServiceName": {
-                    "referenceName": "onYourData",
+                    "referenceName": "patientReferral",
                     "type": "LinkedServiceReference",
                     "parameters": {
                         "documentIntelligenceAPI": {
@@ -383,7 +383,7 @@
                                     "userProperties": [],
                                     "typeProperties": {
                                         "pipeline": {
-                                            "referenceName": "onYourData",
+                                            "referenceName": "patientReferral",
                                             "type": "PipelineReference"
                                         },
                                         "waitOnCompletion": true,
@@ -755,7 +755,7 @@
                                     "userProperties": [],
                                     "typeProperties": {
                                         "pipeline": {
-                                            "referenceName": "onYourData",
+                                            "referenceName": "patientReferral",
                                             "type": "PipelineReference"
                                         },
                                         "waitOnCompletion": true,
@@ -1044,7 +1044,7 @@
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/datasets/blobfile')]",
-                "[concat(variables('factoryId'), '/pipelines/onYourData')]",
+                "[concat(variables('factoryId'), '/pipelines/patientReferral')]",
                 "[concat(variables('factoryId'), '/dataflows/createMDfile')]"
             ]
         },
@@ -1122,7 +1122,7 @@
                                     "userProperties": [],
                                     "typeProperties": {
                                         "pipeline": {
-                                            "referenceName": "onYourData",
+                                            "referenceName": "patientReferral",
                                             "type": "PipelineReference"
                                         },
                                         "waitOnCompletion": true,
@@ -1305,7 +1305,7 @@
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/datasets/blob')]",
-                "[concat(variables('factoryId'), '/pipelines/onYourData')]",
+                "[concat(variables('factoryId'), '/pipelines/patientReferral')]",
                 "[concat(variables('factoryId'), '/pipelines/singleAnalyzeDocument_withoutIntel')]"
             ]
         },
@@ -1384,7 +1384,7 @@
                                     "userProperties": [],
                                     "typeProperties": {
                                         "pipeline": {
-                                            "referenceName": "onYourData",
+                                            "referenceName": "patientReferral",
                                             "type": "PipelineReference"
                                         },
                                         "waitOnCompletion": true,
