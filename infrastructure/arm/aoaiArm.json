@@ -731,7 +731,7 @@
             "aiSampleAppDeploymentName": "[take(concat(parameters('prefix'), '-aiSampleApp-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "cosmosDbDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "adfOnYourDataDeploymentName": "[take(concat(parameters('prefix'), '-adfOnYourData-', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "adfPatientReferralDeploymentName": "[take(concat(parameters('prefix'), '-adfPatientReferral-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "adfPatientReferralDeploymentName": "[take(concat(parameters('prefix'), '-adfPatRef-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "azVideoIndexerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgCosmosRbacDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-rbac-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "azVideoIndexerRbacForBlobOwnerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-rbac-for-blobOwner-', parameters('location'), variables('deploymentSuffix')), 64)]"
@@ -2814,7 +2814,7 @@
                     },
                     "azureOpenAiResourceId": {
                         "value": "[variables('resourceIds').azureOpenAiResourceId]"
-                    },
+                    }
                 }
             }
         },        
@@ -2828,7 +2828,7 @@
             "resourceGroup": "[variables('resourceNames').rgName]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfOnYourDataDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfPatientReferralDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfPatientReferralDeploymentName)]"
             ],
             "properties": {
                 "mode": "Incremental",
