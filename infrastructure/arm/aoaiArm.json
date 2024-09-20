@@ -2726,9 +2726,6 @@
                     "aiSearchServiceEndpoint": {
                         "value": "[variables('azureAiSearchEndpoint')]"
                     },
-                    "embeddingsDeploymentName": {
-                        "value": "[concat(variables('onYourDataSampleVariables').embeddingDeploymentName, '-', variables('onYourDataSampleVariables').embeddingModelName)]"
-                    },
                     "gpt4DeploymentName": {
                         "value": "[concat(variables('onYourDataSampleVariables').gptDeploymentName, '-', variables('onYourDataSampleVariables').gptModelName)]"
                     },
