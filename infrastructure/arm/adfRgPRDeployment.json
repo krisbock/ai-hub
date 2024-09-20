@@ -278,7 +278,7 @@
                 "schema": []
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/linkedServices/onYourData')]"
+                "[concat(variables('factoryId'), '/linkedServices/patientReferral')]"
             ]
         },
         {
