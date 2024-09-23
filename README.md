@@ -64,7 +64,7 @@ With great power comes great responsibility. As AI becomes more ubiquitous and i
 
 ### Use cases
 
-The Enterprise Azure OpenAI Hub provides prescriptive architecture and design guidelines for several use cases that have served as proven patterns in several customer engagments. We aim to incorporate the learnings and best practices while making it as simple as possible for you to validate in your own context, using your own data as needed. Whether you are using the use cases for learning, exploration, or production deployments - we are equally happy as long as it can help you in your desired direction while unlocking Gen AI scenarios on the Azure platform. We will continue to iterate and add more use cases to the library as we continue to evolve and refine commun customer patterns and adoption, aligned with the development of the Azure AI platform itself.
+The Enterprise Azure OpenAI Hub provides prescriptive architecture and design guidelines for several use cases that have served as proven patterns in several customer engagements. We aim to incorporate the learnings and best practices while making it as simple as possible for you to validate in your own context, using your own data as needed. Whether you are using the use cases for learning, exploration, or production deployments - we are equally happy as long as it can help you in your desired direction while unlocking Gen AI scenarios on the Azure platform. We will continue to iterate and add more use cases to the library as we continue to evolve and refine common customer patterns and adoption, aligned with the development of the Azure AI platform itself.
 
 For technical validation of the use cases you consider to deploy, you can go through the step-by-step guidance in the [use cases documentation](./docs/use-cases.md).
 
@@ -86,7 +86,17 @@ Azure native RAG Architecture leveraging Azure AI search for vectorization and u
 
 Learn more about the architecture and how to use the use case in the ['On Your Data' architecture article](./docs/rag.md)
 
-To learn more about the general "Azure OpenAI - 'On Your Data'" product documentation, visit the offial [Azure OpenAI documentation](https://learn.microsoft.com/azure/ai-services/openai/concepts/use-your-data?tabs=ai-search). 
+To learn more about the general "Azure OpenAI - 'On Your Data'" product documentation, visit the official [Azure OpenAI documentation](https://learn.microsoft.com/azure/ai-services/openai/concepts/use-your-data?tabs=ai-search). 
+
+#### 'Patient Referral'
+
+This pattern leverages the multimodal capability of GPT-4o to extract structured JSON data from Patient referrals in PDF or scanned documents, using the Azure OpenAI Service.  This approach takes advantage of the model's ability to understand the structure of a document and extract the relevant information using vision capabilities. 
+
+!['Patient Referral'](./docs/azure-rag-architecture.svg)
+
+Learn more about the architecture and how to use the use case in the [Patient Referral architecture article](./docs/patient_referral.md)
+
+To learn more about the ability to integrate text and images into a single model, visit the official [Azure OpenAI documentation](https://learn.microsoft.com/en-gb/azure/ai-services/openai/concepts/models#gpt-4o-and-gpt-4-turbo).
 
 ## Contributing
 
