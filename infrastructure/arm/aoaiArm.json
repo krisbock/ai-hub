@@ -2823,7 +2823,7 @@
         },
         // Deploying Data Factory into the primary region if 'patient referral' use case is being select
         {
-            "condition": "[not(equals(parameters('aiUseCaseSelection'), 'patientreferral'))]",
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').adfPatientReferralDeploymentName]",
