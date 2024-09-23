@@ -11,7 +11,7 @@
         "location": {
             "type": "string",
             "metadata": {
-                "description": "Provide the Azure region for the storage accont"
+                "description": "Provide the Azure region for the storage account"
             }
         },
         "prefix": {
@@ -290,12 +290,6 @@
                     "factoryName": {
                         "value": "[variables('name-compliant-df')]"
                     },
-                    "triggerDocBlob_properties_singleAnalyzeDocument_parameters_fileName": {
-                        "value": "@trigger().outputs.body.fileName"
-                    },
-                    "triggerDocBlob_properties_typeProperties_scope": {
-                        "value": "[parameters('storageAccountResourceId')]"
-                    },
                     "triggerDocBlobWithoutIntel_properties_singleAnalyzeDocument_withoutIntel_parameters_fileName": {
                         "value": "@trigger().outputs.body.fileName"
                     },
@@ -304,12 +298,6 @@
                     },
                     "blobStoreDoc_properties_typeProperties_serviceEndpoint": {
                         "value": "[parameters('storageAccountBlobEndpoint')]"
-                    },
-                    "onYourData_properties_typeProperties_url": {
-                        "value": "@{linkedService().documentIntelligenceAPI}documentintelligence/documentModels/@{linkedService().modelId}/analyzeResults/@{linkedService().resultID}?api-version=2023-10-31-preview"
-                    },
-                    "onYourData_properties_typeProperties_aadResourceId": {
-                        "value": "https://cognitiveservices.azure.com"
                     },
                     "GPT4Deployment_properties_typeProperties_url": {
                         "value": "@{linkedService().open_ai_base}"
@@ -320,9 +308,6 @@
                     "storageaccountcontainerBatch": {
                         "value": "docsbatch"
                     },
-                    "storageaccountcontainerBatchIntel": {
-                        "value": "docsintelbatch"
-                    },
                     "storageaccounturl": {
                         "value": "[parameters('storageAccountBlobEndpoint')]"
                     },
@@ -331,9 +316,6 @@
                     },
                     "dataRefreshIntervalInMinutes": {
                         "value": "60"
-                    },
-                    "chunkSize": {
-                        "value": "1024"
                     },
                     "storageAccountResourceId": {
                         "value": "[parameters('storageAccountResourceId')]"
