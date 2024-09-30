@@ -1604,6 +1604,11 @@
                                         "value": "onyourdata"
                                     },
                                     {
+                                        "label": "Patient Referral",
+                                        "description": "Analyze healthcare referral documents using the power of OpenAI models, such as GPT-4, directly on your data with enterprise-grade security on Azure.",
+                                        "value": "patientreferral"
+                                    },                                    
+                                    {
                                         "label": "AI Assistant for videos (Preview)",
                                         "description": "Extract key insights and identify scenes suited for short video clip generation for social media, using Azure Video Indexer and Azure OpenAI Assistant (Preview) APIs",
                                         "value": "video"
@@ -1622,6 +1627,15 @@
                                 "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-video-architecture.svg'>"
                             }
                         },
+                        {
+                            "name": "patientReferralArchitecture",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-video-architecture.svg'>"
+                            }
+                        },                        
                         {
                             "name": "onYourDataArchitecture",
                             "type": "Microsoft.Common.InfoBox",
@@ -1735,12 +1749,26 @@
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'vision')]"
                         },
                         {
+                            "name": "aiPatientReferralSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the 'Patient Referral' use case",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]"
+                        },                        
+                        {
                             "name": "aiAddOnYouDataSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Required services for the 'On Your Data' use case",
                             "elements": [],
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
                         },
+                        {
+                            "name": "aiAddVideoSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the 'AI Assistant for Video' use case",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'video')]"
+                        },                        
                         {
                             "name": "aiDedicatedInfo",
                             "type": "Microsoft.Common.TextBlock",
@@ -1782,7 +1810,7 @@
                         {
                             "name": "aiDedicatedSection",
                             "type": "Microsoft.Common.Section",
-                            "label": "Dedicated Azure OpenAI instace for index and embeddings",
+                            "label": "Dedicated Azure OpenAI instance for index and embeddings",
                             "visible": "[equals(steps('aiAuxiliarySettings').aiAddEmbeddingInstance, 'Yes')]",
                             "elements": [
                                 {
@@ -1817,12 +1845,12 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Azure AI Search",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchInfo",
                             "type": "Microsoft.Common.TextBlock",
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]",
                             "options": {
                                 "icon": "None",
                                 "text": "Azure AI Search, an AI-powered information retrieval platform, helps developers build rich search experiences and generative AI apps that combine large language models with enterprise data. Implement search functionality for any mobile or search application within your organization or as part of software as a service (SaaS) apps.",
@@ -1837,7 +1865,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Scale and Capacity Settings",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchReplicas",
@@ -1852,7 +1880,7 @@
                             "constraints": {
                                 "required": false
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchPartitions",
@@ -1867,14 +1895,14 @@
                             "constraints": {
                                 "required": false
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchNetworkSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
                         },
                         {
                             "name": "aiSearchDisableNetworkAccess",
@@ -1895,12 +1923,12 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchNetworkingInfo",
                             "type": "Microsoft.Common.InfoBox",
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
                             "options": {
                                 "icon": "warning",
                                 "text": "The VNet and subnet you select can be in a different Azure region then the Private Endpoint for Azure AI search. Ensure you have connectivity to the other services you are creating."
@@ -1917,7 +1945,7 @@
 									"location": "all"
 								}
 							},
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
 						},
 						{
 							"name": "aiSearchSubnets",
@@ -1936,7 +1964,7 @@
 								"allowedValues": "[map(steps('aiAuxiliarySettings').aiSearchSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
 								"required": true
 							},
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
 						},
                         {  
                             "name": "aiSearchSelectedVnetDetails",  
@@ -1949,7 +1977,7 @@
                         {
                             "name": "aiSearchNetworkingRegionOutputInfo",
                             "type": "Microsoft.Common.InfoBox",
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), not(equals(steps('aiAuxiliarySettings').aiSearchSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('aiAuxiliarySettings').aiSearchSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
                             "options": {
                                 "icon": "warning",
                                 "text": "Note you are creating the Private Endpoint into a different Azure Region then Azure AI Search. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
@@ -1958,7 +1986,7 @@
                         {
                             "name": "aiSearchPrivateEndpointInfo",
                             "type": "Microsoft.Common.InfoBox",
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), equals(steps('aiAuxiliarySettings').aiSearchDisableNetworkAccess, 'Yes'))]",
                             "options": {
                                 "icon": "warning",
                                 "text": "To allow access to your Azure AI Search resource from Azure OpenAI resource, you need to submit an application form. The application will be reviewed in 10 business days and you will be contacted via email about the results. If you are eligible, we will provision the private endpoint in Microsoft managed virtual network, and send a private endpoint connection request to your search service, and you will need to approve the request.",
@@ -1970,7 +1998,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Authorization Settings",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchRbacAuthz",
@@ -1991,7 +2019,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchSystemIdentity",
@@ -2012,14 +2040,14 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchMonSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Azure Monitor Settings",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiSearchMonCreation",
@@ -2040,7 +2068,7 @@
                                 ],
                                 "required": true
                             },
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes')]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "aiAddServicesSectionVision",
@@ -2773,19 +2801,19 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Required services for the selected use case",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "dfSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Azure Data Factory",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
                         },
                         {
                             "name": "dfInfo",
                             "type": "Microsoft.Common.TextBlock",
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]",
                             "options": {
                                 "icon": "None",
                                 "text": "Azure Data Factory is a cloud-based data integration service that allows you to create, schedule, and orchestrate data pipelines for moving and transforming data between different data stores. In this setup Data Factory will provide pipelines for index creation in Azure AI Search for RAG based use cases.",
@@ -2936,6 +2964,195 @@
                                 "required": true
                             },
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
+                        },
+                        {
+                            "name": "aiAddServicesSectionPR",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Required services for the selected use case",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]"
+                        },
+                        {
+                            "name": "afSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Function App",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]"
+                        },
+                        {
+                            "name": "afInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]",
+                            "options": {
+                                "icon": "None",
+                                "text": "Azure Functions is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs.  In this scenario Function Apps will host the function for passing the uploaded image to the Azure OpenAI model for interpretation.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+                                }
+                            }
+                        },
+                        {
+                            "name": "afNetworkSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Network Settings",
+                            "elements": [],
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                        },
+                        {
+                            "name": "afDisableNetworkAccess",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Disable Public Network Access",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                        },
+                        {
+                            "name": "afNetworkingInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').afDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Azure Functions requires two subnets for VNet integration.  Inbound and Outbound.  Ensure you have connectivity to the other services you are creating."
+                            }
+                        },
+                        {
+							"name": "afVnetSelector",
+							"type": "Microsoft.Solutions.ResourceSelector",
+							"label": "Select an existing Virtual Network",
+							"resourceType": "Microsoft.Network/virtualNetworks",
+							"options": {
+								"filter": {
+									"subscription": "onBasics",
+									"location": "all"
+								}
+							},
+        
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').afDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+						{
+							"name": "afSubnets",
+							"type": "Microsoft.Solutions.ArmApiControl",
+							"request": {
+								"method": "GET",
+								"path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').afVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').afVnetSelector.name,'/subnets?api-version=2022-01-01')]"
+							}
+						},
+						{
+							"name": "afSubnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet for the Function App",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('aiAuxiliarySettings').afSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').afDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},
+                        {
+							"name": "afPESubnetList",
+							"type": "Microsoft.Common.DropDown",
+							"label": "Select an existing Subnet for the Function App Private Endpoints",
+							"filter": true,
+							"constraints": {
+								"allowedValues": "[map(steps('aiAuxiliarySettings').afSubnets.value, (item) => parse(concat('{\"label\":\"', item.name, '\",\"value\":\"', item.id, '\"}')))]",
+								"required": true
+							},
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').afDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+						},                        
+                        {  
+                            "name": "afSelectedVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').afVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').afVnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
+                        },
+                        {  
+                            "name": "afSelectedPEVnetDetails",  
+                            "type": "Microsoft.Solutions.ArmApiControl",  
+                            "request": {  
+                                "method": "GET",  
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/resourceGroups/', last(take(split(steps('aiAuxiliarySettings').afVnetSelector.id, '/'), 5)), '/providers/Microsoft.Network/virtualNetworks/', steps('aiAuxiliarySettings').afVnetSelector.name, '?api-version=2022-01-01')]"  
+                            }  
+                        },                        
+                        {
+                            "name": "afNetworkingRegionOutputInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').afDisableNetworkAccess, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral'), not(equals(steps('aiAuxiliarySettings').afSelectedVnetDetails.location, steps('basics').resourceScope.location.name)), not(equals(steps('basics').aiIntention, 'Multiple')))]",
+                            "options": {
+                                "icon": "warning",
+                                "text": "Note you are creating the Private Endpoint into a different Azure Region then Data Factory. Ensure you have connectivity with the other Azure services you are creating in case their Private Endpoints are in different regions and Virtual Networks"
+                            }
+                        },
+                        {
+                            "name": "afAuthzSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Authorization Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]"
+                        },
+                        {
+                            "name": "afSystemIdentity",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Managed Identity (System-assigned) for Function App",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "When enabling Managed Identity, this identity will have RBAC permission access the Azure OpenAI instance.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]"
+                        },
+                        {
+                            "name": "afMonSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure Monitor Settings",
+                            "elements": [],
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]"
+                        },
+                        {
+                            "name": "afMonCreation",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Enable Diagnostic Settings for logging and threat detection",
+                            "defaultValue": "Yes (recommended)",
+                            "toolTip": "",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "Yes (recommended)",
+                                        "value": "Yes"
+                                    },
+                                    {
+                                        "label": "No",
+                                        "value": "No"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]"
                         }
                     ]
                 }
@@ -3029,7 +3246,14 @@
                 "dfSystemIdentity": "[steps('aiAuxiliarySettings').dfSystemIdentity]",
                 "dfMonCreation": "[steps('aiAuxiliarySettings').dfMonCreation]",
                 "videoSystemIdentity": "[steps('aiAuxiliarySettings').aiVideoIndexerSystemIdentity]",
-                "videoMonCreation": "[steps('aiAuxiliarySettings').aiVideoIndexerMonCreation]"
+                "videoMonCreation": "[steps('aiAuxiliarySettings').aiVideoIndexerMonCreation]",
+                "functionAppVNetName": "[steps('aiAuxiliarySettings').afVnetSelector.name]",
+                "functionAppSubnetId": "[steps('aiAuxiliarySettings').afSubnetList]",
+                "functionAppPESubnetId": "[steps('aiAuxiliarySettings').afPESubnetList]",
+                "functionAppSystemIdentity": "[steps('aiAuxiliarySettings').afSystemIdentity]",
+                "functionMonCreation": "[steps('aiAuxiliarySettings').afMonCreation]",
+                "functionDisableNetworkAccess": "[steps('aiAuxiliarySettings').afDisableNetworkAccess]"
+
             },
             "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",
