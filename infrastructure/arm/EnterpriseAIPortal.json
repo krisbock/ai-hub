@@ -1902,7 +1902,7 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Network Settings",
                             "elements": [],
-                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple')))]"
+                            "visible": "[and(equals(steps('aiAuxiliarySettings').aiUseCaseDeployment, 'Yes'), equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'), not(equals(steps('basics').aiIntention, 'Multiple'))))]"
                         },
                         {
                             "name": "aiSearchDisableNetworkAccess",
@@ -2801,19 +2801,19 @@
                             "type": "Microsoft.Common.Section",
                             "label": "Required services for the selected use case",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
                         },
                         {
                             "name": "dfSection",
                             "type": "Microsoft.Common.Section",
                             "label": "Azure Data Factory",
                             "elements": [],
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]"
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
                         },
                         {
                             "name": "dfInfo",
                             "type": "Microsoft.Common.TextBlock",
-                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata'))]",
+                            "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]",
                             "options": {
                                 "icon": "None",
                                 "text": "Azure Data Factory is a cloud-based data integration service that allows you to create, schedule, and orchestrate data pipelines for moving and transforming data between different data stores. In this setup Data Factory will provide pipelines for index creation in Azure AI Search for RAG based use cases.",
