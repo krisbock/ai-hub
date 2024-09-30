@@ -3259,8 +3259,8 @@
                 "videoSystemIdentity": "[steps('aiAuxiliarySettings').aiVideoIndexerSystemIdentity]",
                 "videoMonCreation": "[steps('aiAuxiliarySettings').aiVideoIndexerMonCreation]",
                 "functionAppVNetName": "[steps('aiAuxiliarySettings').afVnetSelector.name]",
-                "functionAppSubnetId": "[steps('aiAuxiliarySettings').dfSubnetList]",
-                "functionAppPESubnetID": "[steps('aiAuxiliarySettings').dfPESubnetList]",
+                "functionAppSubnetId": "[steps('aiAuxiliarySettings').afSubnetList]",
+                "functionAppPESubnetId": "[steps('aiAuxiliarySettings').afPESubnetList]",
                 "functionAppSystemIdentity": "[steps('aiAuxiliarySettings').afSystemIdentity]",
                 "functionMonCreation": "[steps('aiAuxiliarySettings').afMonCreation]",
                 "functionDisableNetworkAccess": "[steps('aiAuxiliarySettings').afDisableNetworkAccess]"

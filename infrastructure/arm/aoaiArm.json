@@ -662,7 +662,7 @@
             "type": "string",
             "defaultValue": ""
         },
-        "functionAppPESubnetID": {
+        "functionAppPESubnetId": {
             "type": "string",
             "defaultValue": ""
         },
