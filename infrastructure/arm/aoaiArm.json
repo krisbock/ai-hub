@@ -2709,6 +2709,34 @@
                 }
             }
         },
+
+        // Retrieving the objectId from FunctionApp system identity
+        {
+            "condition": "[and(equals(parameters('aiUseCaseSelection'), 'patientreferral'), equals(parameters('functionAppSystemIdentity'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').rgAzureFunctionAppObjectIdDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureFunctionDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgAzureObjectId]"
+                },
+                "parameters": {
+                    "resourceId": {
+                        "value": "[variables('resourceIds').azureFunctionResourceId]"
+                    },
+                    "apiVersion": {
+                        "value": "[variables('apiVersions').webSites]"
+                    }
+                }
+            }
+        },
+
         // Creating Role Assignment for Function App on AOAI using Cognitive Services Open AI Contributor role
         {
             "condition": "[and(equals(parameters('aiRbacAuthz'), 'Yes'), equals(parameters('aiUseCaseSelection'), 'patientreferral'))]",
@@ -3031,8 +3059,7 @@
             "name": "[variables('deploymentNames').rgAzureDfObjectIdDeploymentName]",
             "resourceGroup": "[variables('resourceNames').rgName]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfOnYourDataDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfPatientReferralDeploymentName)]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').adfOnYourDataDeploymentName)]"
             ],
             "properties": {
                 "mode": "Incremental",
