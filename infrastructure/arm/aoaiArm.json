@@ -2718,7 +2718,7 @@
             "resourceGroup": "[variables('resourceNames').rgName]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureFunctionAppObjectIdDeploymentName)]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureFunctionDeploymentName)]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -2748,7 +2748,7 @@
             "resourceGroup": "[variables('resourceNames').rgName]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureFunctionAppObjectIdDeploymentName)]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureFunctionDeploymentName)]"
             ],
             "properties": {
                 "mode": "Incremental",
