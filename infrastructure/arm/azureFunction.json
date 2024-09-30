@@ -226,7 +226,7 @@
     "name-compliant-azFunc-nic": "[concat(variables('name-compliant-azureFunctionApp'), '-nic')]",
     "name-compliant-storage": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
     "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",    
-    "applicationInsightsName": "[format('appi-{0}', uniqueString(resourceGroup().id))]",
+    //"applicationInsightsName": "[format('appi-{0}', uniqueString(resourceGroup().id))]",
     "privateFunctionAppDnsZoneName": "privatelink.azurewebsites.net",
     // "privateStorageFileDnsZoneName": "[format('privatelink.file.{0}', environment().suffixes.storage)]",
     // "privateEndpointStorageFileName": "[format('{0}-file-private-endpoint', parameters('functionStorageAccountName'))]",

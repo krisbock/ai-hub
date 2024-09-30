@@ -91,9 +91,9 @@ To learn more about the general "Azure OpenAI - 'On Your Data'" product document
 
 #### 'Patient Referral'
 
-This pattern leverages the multimodal capability of GPT-4o to extract structured JSON data from Patient referrals in PDF or scanned documents, using the Azure OpenAI Service.  This approach takes advantage of the model's ability to understand the structure of a document and extract the relevant information using vision capabilities. 
+This pattern leverages the multi-modal capability of GPT-4o to extract structured JSON data from Patient referrals in PDF or scanned documents, using the Azure OpenAI Service.  This approach takes advantage of the model's ability to understand the structure of a document and extract the relevant information using vision capabilities. 
 
-!['Patient Referral'](./docs/azure-rag-architecture.svg)
+!['Patient Referral'](./docs/azure-multimodal-architecture.svg)
 
 Learn more about the architecture and how to use the use case in the [Patient Referral architecture article](./docs/patient_referral.md)
 
