@@ -398,7 +398,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
+        //"[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[0], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[1], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[2])]",
         "[resourceId('Microsoft.Web/serverfarms', variables('name-compliant-azureFunctionApp'))]"
         // "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointStorageBlobName'), 'blobPrivateDnsZoneGroup')]",
