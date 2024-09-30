@@ -1,0 +1,435 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": { 
+    "rgName": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Provide name for the resource group that will be created"
+        }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The location into which the resources should be deployed."
+      }
+    },
+    "prefix": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Provide name for the Azure Doc Intel instance that will be created"
+        }
+    },       
+    "functionWorkerRuntime": {
+      "type": "string",
+      "defaultValue": "python",
+      "allowedValues": [
+        "dotnet",
+        "node",
+        "python",
+        "java"
+      ],
+      "metadata": {
+        "description": "The language worker runtime to load in the function app."
+      }
+    },
+    "functionPlanOS": {
+      "type": "string",
+      "defaultValue": "Linux",
+      "allowedValues": [
+        "Windows",
+        "Linux"
+      ],
+      "metadata": {
+        "description": "Specifies the OS used for the Azure Function hosting plan."
+      }
+    },
+    "functionAppPlanSku": {
+      "type": "string",
+      "defaultValue": "EP1",
+      "allowedValues": [
+        "EP1",
+        "EP2",
+        "EP3"
+      ],
+      "metadata": {
+        "description": "Specifies the Azure Function hosting plan SKU."
+      }
+    },
+    // "functionAppPlanName": {
+    //   "type": "string",
+    //   "defaultValue": "[format('plan-{0}', uniqueString(resourceGroup().id))]",
+    //   "metadata": {
+    //     "description": "The name of the Azure Function hosting plan."
+    //   }
+    // },
+    "functionStorageAccountName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The name of the backend Azure storage account used by the Azure Function app."
+      }
+    },
+    "zipUrl": {
+        "type": "String",
+        "defaultValue": "https://github.com/krisbock/ai-hub/infrastructure/arm/function.zip",
+        "metadata": {
+            "description": "Public github repo containing web app code."
+        }
+    },    
+    // "vnetName": {
+    //   "type": "string",
+    //   "defaultValue": "[format('vnet-{0}', uniqueString(resourceGroup().id))]",
+    //   "metadata": {
+    //     "description": "The name of the virtual network for virtual network integration."
+    //   }
+    // },
+    // "functionSubnetName": {
+    //   "type": "string",
+    //   "defaultValue": "snet-func",
+    //   "metadata": {
+    //     "description": "The name of the virtual network subnet to be associated with the Azure Function app."
+    //   }
+    // },
+    // "privateEndpointSubnetName": {
+    //   "type": "string",
+    //   "defaultValue": "snet-pe",
+    //   "metadata": {
+    //     "description": "The name of the virtual network subnet used for allocating IP addresses for private endpoints."
+    //   }
+    // },
+    // "vnetAddressPrefix": {
+    //   "type": "string",
+    //   "defaultValue": "10.100.0.0/16",
+    //   "metadata": {
+    //     "description": "The IP adddress space used for the virtual network."
+    //   }
+    // },
+    // "functionSubnetAddressPrefix": {
+    //   "type": "string",
+    //   "defaultValue": "10.100.0.0/24",
+    //   "metadata": {
+    //     "description": "The IP address space used for the Azure Function integration subnet."
+    //   }
+    // },
+    // "privateEndpointSubnetAddressPrefix": {
+    //   "type": "string",
+    //   "defaultValue": "10.100.1.0/24",
+    //   "metadata": {
+    //     "description": "The IP address space used for the private endpoints."
+    //   }
+    // },
+    "functionAppVNetName": {
+        "type": "string",
+        "defaultValue": "[format('vnet-{0}', uniqueString(parameters('rgName')))]",
+        "metadata": {
+            "description": "Provide the VNet name of the subnet where the Azure Function App will be connected"
+        }
+    },        
+    "functionAppSubnetId": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Provide the subnet id where the Azure Function App will be connected"
+        }
+    }, 
+    "functionAppPESubnetId": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Provide the subnet id where the Azure Function App will be connected"
+        }
+    },       
+    "linuxFxVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Only required for Linux app to represent runtime stack in the format of 'runtime|runtimeVersion'. For example: 'python|3.9'"
+      }
+    },
+    "userAssignedIdentityId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The user assigned identity id to be used for the deployment script."
+      }
+    },
+    "functionAppNwLocation": {
+      "type": "string",
+      "defaultValue": "parameters('location')",
+      "metadata": {
+        "description": "The location of the Azure Function app private endpoints."
+      }
+    },
+    "functionAppDisableNetworkAccess": {
+      "type": "string",
+      "defaultValue": "No",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Specifies whether the Azure Function app should have network access enabled."
+      }
+    },
+    "containerName": {
+        "type": "String",
+        "defaultValue": "funcapp",
+        "metadata": {
+            "description": "Name of the container in the storage account."
+        }
+    },
+    "azureOpenAIEndpoint": {
+        "type": "String",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Azure OpenAI endpoint."
+        }
+    },
+    "azureOpenAiModelName": {
+        "type": "String",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Azure OpenAI Model Name."
+        }
+    }
+  },
+  "variables": {
+    "name-compliant-azureFunctionApp": "[concat(parameters('prefix'), '-', parameters('location'), '-azfa')]",
+    "name-compliant-azureAppPlan": "[concat(parameters('prefix'), '-', parameters('location'), '-azfa-ap')]",
+    "name-compliant-azFunc-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azfa-pe')]",
+    "name-compliant-azFunc-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azfa-asg')]",
+    "name-compliant-azFunc-nic": "[concat(variables('name-compliant-azureFunctionApp'), '-nic')]",
+    "name-compliant-storage": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
+    "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",    
+    "applicationInsightsName": "[format('appi-{0}', uniqueString(resourceGroup().id))]",
+    "privateFunctionAppDnsZoneName": "privatelink.azurewebsites.net",
+    // "privateStorageFileDnsZoneName": "[format('privatelink.file.{0}', environment().suffixes.storage)]",
+    // "privateEndpointStorageFileName": "[format('{0}-file-private-endpoint', parameters('functionStorageAccountName'))]",
+    // "privateStorageTableDnsZoneName": "[format('privatelink.table.{0}', environment().suffixes.storage)]",
+    // "privateEndpointStorageTableName": "[format('{0}-table-private-endpoint', parameters('functionStorageAccountName'))]",
+    // "privateStorageBlobDnsZoneName": "[format('privatelink.blob.{0}', environment().suffixes.storage)]",
+    // "privateEndpointStorageBlobName": "[format('{0}-blob-private-endpoint', parameters('functionStorageAccountName'))]",
+    // "privateStorageQueueDnsZoneName": "[format('privatelink.queue.{0}', environment().suffixes.storage)]",
+    // "privateEndpointStorageQueueName": "[format('{0}-queue-private-endpoint', parameters('functionStorageAccountName'))]",
+    "functionContentShareName": "function-content-share",
+    "isReserved": "[if(equals(parameters('functionPlanOS'), 'Linux'), true(), false())]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('applicationInsightsName')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web"
+      }
+    },
+    // deployment script to upload package to storage container
+    {
+        "type": "Microsoft.Resources/deploymentScripts",
+        "apiVersion": "2020-10-01",
+        "name": "UploadFilesStorage",
+        "location": "[parameters('location')]",
+        "kind": "AzureCLI",
+        "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": {
+                "[parameters('userAssignedIdentityId')]": {}
+            }
+        },
+        "dependsOn": [
+            //"[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityId'))]",
+            "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', parameters('functionStorageAccountName'), 'default', parameters('containerName'))]" // Should run this script only when container actually gets created
+        ],
+        "properties": {
+            "AzCliVersion": "2.2.0",
+            "timeout": "PT30M",
+            "arguments": "[concat(parameters('functionStorageAccountName'), ' ', parameters('containerName'), ' ' , parameters('zipUrl'))]",
+            "scriptContent": "wget -O files.zip $3 ; az storage blob upload-batch -d $2 -s datafolder --account-name $1",
+            "cleanupPreference": "OnSuccess",
+            "retentionInterval": "P1D"
+        }
+    },    
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('name-compliant-azureFunctionApp')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "tier": "ElasticPremium",
+        "name": "[parameters('functionAppPlanSku')]",
+        "size": "[parameters('functionAppPlanSku')]",
+        "family": "EP"
+      },
+      "kind": "elastic",
+      "properties": {
+        "maximumElasticWorkerCount": 20,
+        "reserved": "[variables('isReserved')]"
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('name-compliant-azureFunctionApp')]",
+      "location": "[parameters('location')]",
+      "kind": "[if(variables('isReserved'), 'functionapp,linux', 'functionapp')]",
+      "properties": {
+        "reserved": "[variables('isReserved')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('name-compliant-azureAppPlan'))]",
+        "siteConfig": {
+          "functionsRuntimeScaleMonitoringEnabled": true,
+          "linuxFxVersion": "[if(variables('isReserved'), parameters('linuxFxVersion'), json('null'))]",
+          "appSettings": [
+            // {
+            //   "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+            //   "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))).InstrumentationKey]"
+            // },
+            // Use EntraID = To use this setting, the managed identity must already be available to the function app, with an assigned role equivalent to Monitoring Metrics Publisher.
+            {
+              "name": "APPLICATIONINSIGHTS_AUTHENTICATION_STRING",
+              "value": "Authorization=AAD"
+            },
+            // TODO Change to Keyvalut
+            // "AzureWebJobsSecretStorageType" : "keyvault
+            // {
+            //   "name": "AzureWebJobsStorage",
+            //   "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}', parameters('functionStorageAccountName'), listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccountName')), '2022-05-01').keys[0].value)]"
+            // },
+            // {
+            //   "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+            //   "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}', parameters('functionStorageAccountName'), listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccountName')), '2022-05-01').keys[0].value)]"
+            // },
+            // {
+            //   "name": "WEBSITE_CONTENTSHARE",
+            //   "value": "[variables('functionContentShareName')]"
+            // },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~4"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "[parameters('functionWorkerRuntime')]"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "~14"
+            },
+            {
+              "name": "WEBSITE_VNET_ROUTE_ALL",
+              "value": "1"
+            },
+            {
+              "name": "WEBSITE_CONTENTOVERVNET",
+              "value": "1"
+            },
+            // omit for system assigned
+            // {
+            //   "name": "WEBSITE_RUN_FROM_PACKAGE_BLOB_MI_RESOURCE_ID",
+            //   "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('identityName'))]"
+            // },
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "[format('https://{0}.blob.core.windows.net/{1}/function.zip', parameters('functionStorageAccountName'), variables('functionContentShareName'))]"
+            }
+          ],
+          "publicNetworkAccess": "[if(equals(parameters('functionAppDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[0], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[1], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[2])]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('name-compliant-azureFunctionApp'))]"
+        // "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointStorageBlobName'), 'blobPrivateDnsZoneGroup')]",
+        // "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointStorageFileName'), 'filePrivateDnsZoneGroup')]",
+        // "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointStorageQueueName'), 'queuePrivateDnsZoneGroup')]",
+        // "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointStorageTableName'), 'tablePrivateDnsZoneGroup')]",
+        // "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('privateStorageBlobDnsZoneName'), format('{0}-link', variables('privateStorageBlobDnsZoneName')))]",
+        // "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('privateStorageFileDnsZoneName'), format('{0}-link', variables('privateStorageFileDnsZoneName')))]",
+        // "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('privateStorageQueueDnsZoneName'), format('{0}-link', variables('privateStorageQueueDnsZoneName')))]",
+        // "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('privateStorageTableDnsZoneName'), format('{0}-link', variables('privateStorageTableDnsZoneName')))]",
+        // "[resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2022-05-01",
+      "name": "[variables('name-compliant-azFunc-pe')]",
+      "location": "[parameters('functionAppNwLocation')]",
+      "properties": {
+        "subnet": {
+          "id": "[parameters('functionAppPESubnetId')]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "name": "MyFunctionAppPrivateLinkConnection",
+            "properties": {
+              "privateLinkServiceId": "[resourceId('Microsoft.Web/sites', variables('name-compliant-azureFunctionApp'))]",
+              "groupIds": [
+                "sites"
+              ]
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('name-compliant-azureFunctionApp'))]"
+      ]
+    },
+    // update second subnet to apply delegation to serverfarms
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2022-05-01",
+      "name": "[parameters('functionAppVNetName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        // "addressSpace": {
+        //   "addressPrefixes": [
+        //     "[variables('vnetAddressPrefix')]"
+        //   ]
+        // },
+        "subnets": [
+          {
+            "id": "[parameters('functionAppSubnetId')]",
+            "properties": {
+              //"addressPrefix": "[variables('subnetAddressPrefix')]",
+              "delegations": [
+                {
+                  "name": "delegation",
+                  "properties": {
+                    "serviceName": "Microsoft.Web/serverFarms"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', variables('name-compliant-azFunc-pe'), 'funcPrivateDnsZoneGroup')]",
+      "properties": {
+        "privateDnsZoneConfigs": [
+          {
+            "name": "config",
+            "properties": {
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateFunctionAppDnsZoneName'))]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateEndpoints', variables('name-compliant-azFunc-pe'))]",
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateFunctionAppDnsZoneName'))]"
+      ]
+    }
+  ]
+}
