@@ -288,12 +288,13 @@
                                 "denyEncryptionScopeOverride": true
                             }
                         },        
+                   
                         // upload zip to blob
                         {
                             "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
                             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
                             "apiVersion": "2023-01-01",
-                            "name": "[concat(variables('name-compliant-storage'), '/default/', 'app')]",
+                            "name": "[concat(variables('name-compliant-storage'), '/default/', 'deploy')]",
                             "dependsOn": [
                                 "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'))]",
                                 "[concat('Microsoft.Storage/storageAccounts/', variables('name-compliant-storage'), '/blobServices', '/default')]"

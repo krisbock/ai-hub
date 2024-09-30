@@ -75,7 +75,7 @@
     },
     "zipUrl": {
         "type": "String",
-        "defaultValue": "https://github.com/krisbock/ai-hub/infrastructure/arm/function.zip",
+        "defaultValue": "https://github.com/krisbock/ai-hub/infrastructure/app/function.zip",
         "metadata": {
             "description": "Public github repo containing web app code."
         }
@@ -177,7 +177,7 @@
     },
     "containerName": {
         "type": "String",
-        "defaultValue": "funcapp",
+        "defaultValue": "deploy",
         "metadata": {
             "description": "Name of the container in the storage account."
         }
@@ -329,7 +329,7 @@
         "reserved": "[variables('isReserved')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('name-compliant-azureAppPlan'))]",
         "siteConfig": {
-          "appCommandLine": "python3 -m gunicorn app:app",
+          //"appCommandLine": "python3 -m gunicorn app:app",
           "functionsRuntimeScaleMonitoringEnabled": true,
           "linuxFxVersion": "[if(variables('isReserved'), parameters('linuxFxVersion'), json('null'))]",
           "appSettings": [
@@ -383,7 +383,7 @@
             // },
             {
               "name": "WEBSITE_RUN_FROM_PACKAGE",
-              "value": "[format('https://{0}.blob.core.windows.net/{1}/function.zip', parameters('functionStorageAccountName'), variables('functionContentShareName'))]"
+              "value": "[format('https://{0}.blob.core.windows.net/{1}/function.zip', parameters('functionStorageAccountName'), parameters('containerName'))]"
             },
             {
               "name": "AZURE_OPENAI_MODEL_NAME",
