@@ -649,6 +649,34 @@
         "docLocation": {
             "type": "string",
             "defaultValue": "[parameters('location')]"
+        },
+        "functionAppNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "functionAppVNetName": {
+            "type": "string",
+            "defaultValue": ""
+        },        
+        "functionAppSubnetId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "functionAppPESubnetID": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "functionAppSystemIdentity": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "functionAppDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
         }
     },
     "variables": {
@@ -736,7 +764,11 @@
             "azVideoIndexerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "rgCosmosRbacDeploymentName": "[take(concat(parameters('prefix'), '-cosmos-rbac-', parameters('location'), variables('deploymentSuffix')), 64)]",
             "azVideoIndexerRbacForBlobOwnerDeploymentName": "[take(concat(parameters('prefix'), '-videoIndexer-rbac-for-blobOwner-', parameters('location'), variables('deploymentSuffix')), 64)]",
-            "azureFunctionDeploymentName": "[take(concat(parameters('prefix'), '-azureFunction-', parameters('location'), variables('deploymentSuffix')), 64)]"
+            "azureFunctionDeploymentName": "[take(concat(parameters('prefix'), '-azureFunction-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "rgAzureFunctionAppObjectIdDeploymentName": "[take(concat(parameters('prefix'), '-functionapp-objectId-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azFunctionAppRbacForOpenAiDeploymentName": "[take(concat(parameters('prefix'), '-functionpp-rbac-for-aoai-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "azFunctionAppRbacForBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-functionapp-rbac-for-blobContributor-', parameters('location'), variables('deploymentSuffix')), 64)]",
+            "managedIdentityRbacforBlobContributorDeploymentName": "[take(concat(parameters('prefix'), '-mi-rbac-for-blobContributor-', parameters('location'), variables('deploymentSuffix')), 64)]"
         },
         "sampleAppRepoUrl": "https://github.com/microsoft/sample-app-aoai-chatGPT.git",
         "onYourDataSampleVariables": {
@@ -1304,7 +1336,8 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1348,7 +1381,10 @@
                     },
                     "azMonWorkspaceName": {
                         "value": "[variables('resourceNames').azMonWorkspaceName]"
-                    }
+                    },
+                    "azStgAccntName": {
+                        "value":  "[reference(variables('deploymentNames').storageDeploymentName).outputs.storageAccountName.value]"
+                    }  
                 }
             }
         },
@@ -2673,72 +2709,172 @@
                 }
             }
         },
-        // Deploying Azure Function App into the primary region if 'patient referral' use case is being selected.
-        // {
-        //     "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
-        //     "type": "Microsoft.Resources/deployments",
-        //     "apiVersion": "2022-09-01",
-        //     "name": "[variables('deploymentNames').azureFunctionDeploymentName]",
-        //     "location": "[parameters('location')]",
-        //     "dependsOn": [
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]"
-        //     ],
-        //     "properties": {
-        //         "mode": "Incremental",
-        //         "templateLink": {
-        //             "contentVersion": "1.0.0.0",
-        //             "uri": "[variables('templateUris').azureFunctionTemplateUri]"
-        //         },
-        //         "parameters": {
-        //             "rgName": {
-        //                 "value": "[variables('resourceNames').rgName]"
-        //             },
-        //             "location": {
-        //                 "value": "[parameters('location')]"
-        //             },
-        //             "functionAppSubnetId": {
-        //                 "value": "[parameters('functionAppSubnetId')]"
-        //             },
-        //             "prefix": {
-        //                 "value": "[parameters('prefix')]"
-        //             },
-        //             "functionAppNwLocation": {
-        //                 "value": "[parameters('functionAppNwLocation')]"
-        //             },
-        //             "functionAppDisableNetworkAccess": {
-        //                 "value": "[parameters('functionAppDisableNetworkAccess')]"
-        //             },
-        //             "functionAppSystemIdentity": {
-        //                 "value": "[parameters('functionAppSystemIdentity')]"
-        //             },
-        //             "functionAppMonCreation": {
-        //                 "value": "[parameters('functionAppMonCreation')]"
-        //             },
-        //             "azMonWorkspaceName": {
-        //                 "value": "[variables('resourceNames').azMonWorkspaceName]"
-        //             },
-        //             "storageAccountBlobEndpoint": {
-        //                 "value": "[variables('blobStorageEndpoint')]"
-        //             },
-        //             "azureOpenAiResourceId": {
-        //                 "value": "[variables('resourceIds').azureOpenAiResourceId]"
-        //             },
-        //             "azureOpenAiEndpoint": {
-        //                 "value": "[variables('aoaiEndpoint1')]"
-        //             },
-        //             "azureOpenAiModelName": {
-        //                 "value": "[variables('onYourDataSampleVariables').gptModelName]"
-        //             },
-        //             "azureOpenAiModelDeployment": {
-        //                 "value": "[concat(variables('onYourDataSampleVariables').gptDeploymentName, '-', variables('onYourDataSampleVariables').gptModelName)]"
-        //             }
-        //         }  
-        //     }          
+        // Creating Role Assignment for Function App on AOAI using Cognitive Services Open AI Contributor role
+        {
+            "condition": "[and(equals(parameters('aiRbacAuthz'), 'Yes'), equals(parameters('aiUseCaseSelection'), 'patientreferral'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azFunctionAppRbacForOpenAiDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureFunctionAppObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "a001fd3d-188f-4b5d-821b-7da978bf7442"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiRbacAuthz'), 'Yes'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), reference(variables('deploymentNames').rgAzureFunctionAppObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },   
+        // Creating Role Assignment for Function App on Storage using Storage Data Contributor role
+        {
+            "condition": "[and(equals(parameters('aiRbacAuthz'), 'Yes'), equals(parameters('aiUseCaseSelection'), 'patientreferral'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azFunctionAppRbacForBlobContributorDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').rgAzureFunctionAppObjectIdDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[if(and(equals(parameters('aiRbacAuthz'), 'Yes'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), reference(variables('deploymentNames').rgAzureFunctionAppObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                    }
+                }
+            }
+        },                
 
-        // },
+        // Creating Role Assignment for UserID on Storage account using Storage Blob Data Contributor role to enable zipdeploy upload
+        {
+            "condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'patientreferral'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('stRbacAuthz'), 'Yes'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').managedIdentityRbacforBlobContributorDeploymentName]",
+            "resourceGroup": "[variables('resourceNames').rgName]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').managedIdentityDeploymentName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').rgRbacTemplateUri]"
+                },
+                "parameters": {
+                    "roleDefinitionId": {
+                        "value": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
+                    },
+                    "principalType": {
+                        "value": "ServicePrincipal"
+                    },
+                    "principalId": {
+                        "value": "[reference(variables('deploymentNames').managedIdentityDeploymentName).outputs.identityObjectId.value]"
+                    }
+                }
+            }
+        },
+
+
+
+
+        // Deploying Azure Function App into the primary region if 'patient referral' use case is being selected.
+        {
+            "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('deploymentNames').azureFunctionDeploymentName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').managedIdentityDeploymentName)]",
+                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').managedIdentityRbacforBlobContributorDeploymentName)]"   
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('templateUris').azureFunctionTemplateUri]"
+                },
+                "parameters": {
+                    "rgName": {
+                        "value": "[variables('resourceNames').rgName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "functionAppVNetName": {
+                        "value": "[parameters('functionAppVNetName')]"
+                    },
+                    "functionAppNwLocation": {
+                        "value": "[parameters('functionAppNwLocation')]"
+                    },
+                    "functionAppSubnetId": {
+                        "value": "[parameters('functionAppSubnetId')]"
+                    },    
+                    "functionAppPESubnetId": {
+                        "value": "[parameters('functionAppPESubnetId')]"
+                    },                                     
+                    "functionAppDisableNetworkAccess": {
+                        "value": "[parameters('functionAppDisableNetworkAccess')]"
+                    },
+                    "azMonWorkspaceName": {
+                        "value": "[variables('resourceNames').azMonWorkspaceName]"
+                    },
+                    "azureOpenAiResourceId": {
+                        "value": "[variables('resourceIds').azureOpenAiResourceId]"
+                    },
+                    "azureOpenAiEndpoint": {
+                        "value": "[variables('aoaiEndpoint1')]"
+                    },
+                    "azureOpenAiModelName": {
+                        "value": "[variables('onYourDataSampleVariables').gptModelName]"
+                    },
+                    "azureOpenAiModelDeployment": {
+                        "value": "[concat(variables('onYourDataSampleVariables').gptDeploymentName, '-', variables('onYourDataSampleVariables').gptModelName)]"
+                    },
+                    "userAssignedIdentity": {
+                        "value": "[reference(variables('deploymentNames').managedIdentityDeploymentName).outputs.identityObjectId.value]"
+                    },
+                    "functionStorageAccountName": {
+                        "value": "[reference(variables('deploymentNames').storageDeploymentName).outputs.storageAccountName.value]"
+                    }
+                }                    
+            
+            }          
+        },
         // Deploying Data Factory into the primary region if 'on your data' use case is being select
         {
             "condition": "[equals(parameters('aiUseCaseSelection'), 'onyourdata')]",
@@ -2822,74 +2958,74 @@
             }
         },
         // Deploying Data Factory into the primary region if 'patient referral' use case is being select
-        {
-            "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2022-09-01",
-            "name": "[variables('deploymentNames').adfPatientReferralDeploymentName]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
-                "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "contentVersion": "1.0.0.0",
-                    "uri": "[variables('templateUris').adfPatientReferralTemplateUri]"
-                },
-                "parameters": {
-                    "rgName": {
-                        "value": "[variables('resourceNames').rgName]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    },
-                    "dfSubnetId": {
-                        "value": "[parameters('dfSubnetId')]"
-                    },
-                    "prefix": {
-                        "value": "[parameters('prefix')]"
-                    },
-                    "dfNwLocation": {
-                        "value": "[parameters('dfNwLocation')]"
-                    },
-                    "dfDisableNetworkAccess": {
-                        "value": "[parameters('dfDisableNetworkAccess')]"
-                    },
-                    "dfSystemIdentity": {
-                        "value": "[parameters('dfSystemIdentity')]"
-                    },
-                    "dfMonCreation": {
-                        "value": "[parameters('dfMonCreation')]"
-                    },
-                    "azMonWorkspaceName": {
-                        "value": "[variables('resourceNames').azMonWorkspaceName]"
-                    },
-                    "storageAccountBlobEndpoint": {
-                        "value": "[variables('blobStorageEndpoint')]"
-                    },
-                    "azureOpenAiEndpoint": {
-                        "value": "[variables('aoaiEndpoint1')]"
-                    },
-                    "gpt4DeploymentName": {
-                        "value": "[concat(variables('patientReferralSampleVariables').gptDeploymentName, '-', variables('patientReferralSampleVariables').gptModelName)]"
-                    },
-                    "storageAccountResourceId": {
-                        "value": "[variables('resourceIds').storageAccountResourceId]"
-                    },
-                    "azureOpenAiResourceId": {
-                        "value": "[variables('resourceIds').azureOpenAiResourceId]"
-                    }
-                }
-            }
-        },        
+        // {
+        //     "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
+        //     "type": "Microsoft.Resources/deployments",
+        //     "apiVersion": "2022-09-01",
+        //     "name": "[variables('deploymentNames').adfPatientReferralDeploymentName]",
+        //     "location": "[parameters('location')]",
+        //     "dependsOn": [
+        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
+        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
+        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
+        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]"
+        //     ],
+        //     "properties": {
+        //         "mode": "Incremental",
+        //         "templateLink": {
+        //             "contentVersion": "1.0.0.0",
+        //             "uri": "[variables('templateUris').adfPatientReferralTemplateUri]"
+        //         },
+        //         "parameters": {
+        //             "rgName": {
+        //                 "value": "[variables('resourceNames').rgName]"
+        //             },
+        //             "location": {
+        //                 "value": "[parameters('location')]"
+        //             },
+        //             "dfSubnetId": {
+        //                 "value": "[parameters('dfSubnetId')]"
+        //             },
+        //             "prefix": {
+        //                 "value": "[parameters('prefix')]"
+        //             },
+        //             "dfNwLocation": {
+        //                 "value": "[parameters('dfNwLocation')]"
+        //             },
+        //             "dfDisableNetworkAccess": {
+        //                 "value": "[parameters('dfDisableNetworkAccess')]"
+        //             },
+        //             "dfSystemIdentity": {
+        //                 "value": "[parameters('dfSystemIdentity')]"
+        //             },
+        //             "dfMonCreation": {
+        //                 "value": "[parameters('dfMonCreation')]"
+        //             },
+        //             "azMonWorkspaceName": {
+        //                 "value": "[variables('resourceNames').azMonWorkspaceName]"
+        //             },
+        //             "storageAccountBlobEndpoint": {
+        //                 "value": "[variables('blobStorageEndpoint')]"
+        //             },
+        //             "azureOpenAiEndpoint": {
+        //                 "value": "[variables('aoaiEndpoint1')]"
+        //             },
+        //             "gpt4DeploymentName": {
+        //                 "value": "[concat(variables('patientReferralSampleVariables').gptDeploymentName, '-', variables('patientReferralSampleVariables').gptModelName)]"
+        //             },
+        //             "storageAccountResourceId": {
+        //                 "value": "[variables('resourceIds').storageAccountResourceId]"
+        //             },
+        //             "azureOpenAiResourceId": {
+        //                 "value": "[variables('resourceIds').azureOpenAiResourceId]"
+        //             }
+        //         }
+        //     }
+        // },        
         // Retrieving the objectId from DF system identity
         {
-            //"condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'))]",
-            "condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes'))]",
+            "condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'))]",
+            //"condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').rgAzureDfObjectIdDeploymentName]",
@@ -2936,7 +3072,7 @@
                         "value": "[variables('resourceNames').rgName]"
                     },
                     "principalId": {
-                        "value": "[if(and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureDfObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                        "value": "[if(and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes')), reference(variables('deploymentNames').rgAzureDfObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
                     },
                     "cosmosResourceName": {
                         "value": "[variables('resourceNames').cosmosDbName]"
@@ -2946,7 +3082,8 @@
         },
         // Creating Role Assignment for DF on AOAI using Cognitive Services Open AI Contributor role
         {
-            "condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'onyourdata')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes'))]",
+            //"condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes'))]",
+            "condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').adfOnYourDataRbacForOpenAiDeploymentName]",
@@ -2968,7 +3105,7 @@
                         "value": "ServicePrincipal"
                     },
                     "principalId": {
-                        "value": "[if(and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes')), reference(variables('deploymentNames').rgAzureDfObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                        "value": "[if(and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes')), reference(variables('deploymentNames').rgAzureDfObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
                     }
                 }
             }
@@ -3035,7 +3172,8 @@
         },
         // Creating Role Assignment for DF on Storage account using Storage Blob Data Contributor role
         {
-            "condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'onyourdata')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('stRbacAuthz'), 'Yes'))]",
+            //"condition": "[and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('stRbacAuthz'), 'Yes'))]",
+            "condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('stRbacAuthz'), 'Yes'))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2022-09-01",
             "name": "[variables('deploymentNames').adfOnYourDataRbacForBlobContributorDeploymentName]",
@@ -3058,7 +3196,7 @@
                         "value": "ServicePrincipal"
                     },
                     "principalId": {
-                        "value": "[if(and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes')), reference(variables('deploymentNames').rgAzureDfObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
+                        "value": "[if(and(or(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('aiUseCaseSelection'), 'patientreferral')),  equals(parameters('dfSystemIdentity'), 'Yes'), equals(parameters('aiRbacAuthz'), 'Yes')), reference(variables('deploymentNames').rgAzureDfObjectIdDeploymentName).outputs.systemIdentityId.value, '')]"
                     }
                 }
             }

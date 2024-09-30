@@ -24,6 +24,7 @@ Dive in and start exploring! The **Enterprise Azure OpenAI Hub** is your gateway
 - [Use cases](#use-cases)
     - [Image and Video recognition](#image-and-video-recognition)
     - ['On Your Data'](#on-your-data)
+    - [Patient Referral](#patient-referral)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
 ---

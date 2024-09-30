@@ -87,7 +87,14 @@
             "metadata": {
                 "description": "Provide the resource name of the Azure Monitor workspace where the Azure Open AI instance that will be connected"
             }
-        }
+        },
+        "azStgAccntName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the storage account name used for the allowlist"
+            }
+        }        
     },
     "variables": {
         "name-compliant-azureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-azopenai')]",
@@ -141,7 +148,8 @@
                                 "publicNetworkAccess": "[if(equals(parameters('aiDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
                                 "disableLocalAuth": "[if(equals(parameters('aiRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
                                 "restrictOutboundNetworkAccess": "[if(equals(parameters('aiRestrictOutboundNetworkAccess'), 'Yes'), bool('true'), bool('false'))]",
-                                "networkAcls": "[if(equals(parameters('aiDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]"
+                                "networkAcls": "[if(equals(parameters('aiDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]",
+                                "allowedFqdnList ": ["[if(equals(parameters('aiRestrictOutboundNetworkAccess'), 'Yes'), parameters('azStgAccntName'), json('null'))]"]
                             }
                         },
                         {

@@ -373,9 +373,6 @@
                     "dataRefreshIntervalInMinutes": {
                         "type": "string"
                     },
-                    "chunkSize": {
-                        "type": "string"
-                    },
                     "openAIAPI": {
                         "type": "string"
                     },
@@ -508,10 +505,6 @@
                                                 "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
                                                 "type": "Expression"
                                             },
-                                            "chunkSize": {
-                                                "value": "@pipeline().parameters.chunkSize",
-                                                "type": "Expression"
-                                            },
                                             "storageaccounturl": {
                                                 "value": "@pipeline().parameters.storageaccounturl",
                                                 "type": "Expression"
@@ -571,10 +564,6 @@
                                             "batch": true,
                                             "dataRefreshIntervalInMinutes": {
                                                 "value": "@pipeline().parameters.dataRefreshIntervalInMinutes",
-                                                "type": "Expression"
-                                            },
-                                            "chunkSize": {
-                                                "value": "@pipeline().parameters.chunkSize",
                                                 "type": "Expression"
                                             },
                                             "openAIAPI": {
