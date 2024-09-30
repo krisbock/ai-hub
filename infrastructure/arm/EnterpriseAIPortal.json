@@ -1633,7 +1633,7 @@
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'patientreferral')]",
                             "options": {
                                 "icon": "None",
-                                "text": "<b> </b><img src='https://raw.githubusercontent.com/Azure/ai-hub/main/docs/azure-multimodal-architecture.svg'>"
+                                "text": "<b> </b><img src='https://raw.githubusercontent.com/krbock/ai-hub/main/docs/azure-multimodal-architecture.svg'>"
                             }
                         },                        
                         {
