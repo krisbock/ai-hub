@@ -43,7 +43,7 @@ The Enterprise Azure OpenAI Hub includes the following Azure services:
 * Managed Identity
   * Identities created for each Azure service with respective Role Assignment for Service 2 Service authorizations
 
-Optionally, you can also get started with the initial Gen AI use case (e.g., Azure native RAG architecture and setup for Image and Video recognition) to accelerate the adoption of Generative AI in your organization.
+Optionally, you can also get started with the initial Generative AI use case (e.g., Azure native RAG architecture and setup for Image and Video recognition) to accelerate the adoption of Generative AI in your organization.
 
 * Model deployments, such as:
   * GPT-3
@@ -62,9 +62,9 @@ Optionally, you can also get started with the initial Gen AI use case (e.g., Azu
 
 ## Deploy for Production
 
-When deploying Enterprise Azure OpenAI Hub via Azure portal, the default deployment intent is set to "Production", and the deployment experience is tailored to the Enterprises to conform to their security and compliance requirements. All recommendations are by default being enabled, but allows you to customize each option as needed, should there be any specific requirements that need to be catered for (e.g., use Microsoft-managed keys instead of customer-managed keys for one or more services).
+When deploying Enterprise Azure OpenAI Hub via Azure portal, the default deployment intent is set to "Production", and the deployment experience is tailored to the Enterprises to conform to their security and compliance requirements. All recommendations are enabled by default, but allows you to customize each option as needed, should there be any specific requirements that need to be catered for (e.g., use Microsoft-managed keys instead of customer-managed keys for one or more services).
 
-By selecting "Production", you can currently deploy to only a single Azure region in a subscription, where a virtual network must be already created with a dedicated subnet to be used for the Private Endpoints for each service if you require private connectivity for the Azure services.
+By selecting "Production", you can currently deploy to only a single Azure region in a subscription, where a virtual network must be already created with a dedicated subnet to be used for the Private Endpoints for each service if you require private connectivity for the Azure services.  In addition, the use of Azure Function Apps (through the Patient Referral scenario) also requires a dedicated subnet for the App Service Environment (ASE) to be created in the same region where the Virtual Network is created.
 
 For multi-region deployment, select "Proof of Concept" as the deployment intent, and follow the instructions in the next section.
 
@@ -86,9 +86,9 @@ This section will describe how to deploy the "Enterprise Azure OpenAI Hub" refer
 
 The "Enterprise Azure OpenAI Hub" reference implementation is deployed at the *subscription* scope in Azure, and requires a few pre-requisites to be in place before you can deploy the reference implementation:
 
-- Ideally use a dedicated Azure subscription, where you have submitted the subscription ID into the form for [requesting access to Azure OpenAI](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu). This will ensure that the subscription is enabled for Azure OpenAI, including GTP-4.
+- Ideally use a dedicated Azure subscription, where you have sufficient quota available for Azure OpenAI.  
 - The user who's deploying the reference implementation must be *Owner* of the subscription where the reference implementation will be deployed, as the deployment will be making role assignments for the managed identities that are created for the Azure services.
-- For the "Production" deployment intent, you must have a Virtual Network created in the Azure region where you want to deploy the reference implementation, and a dedicated subnet for the Private Endpoints for the Azure services that you want to deploy with Private Endpoints. The Virtual Network does not require to be in the same region where you are deploying the reference implementation, as the Private Endpoints can be in a different region compared to the Azure services that are created. For the "Proof of Concept" deployment intent, you can deploy to multiple Azure regions, and the Virtual Network and subnet requirements are not needed.
+- For the "Production" deployment intent, you must have a Virtual Network created in the Azure region where you want to deploy the reference implementation, and a dedicated subnet for the Private Endpoints for the Azure services that you want to deploy with Private Endpoints. The Virtual Network does not require to be in the same region where you are deploying the reference implementation, as the Private Endpoints can be in a different region compared to the Azure services that are created. However, the Patient Referral scenario does require the Azure Function to be in the same region as the VNet chosen for it.  For the "Proof of Concept" deployment intent, you can deploy to multiple Azure regions, and the Virtual Network and subnet requirements are not needed.
 
 ## Step by step deployment guidance
 
