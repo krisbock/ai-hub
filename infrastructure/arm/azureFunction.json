@@ -75,7 +75,7 @@
     },
     "zipUrl": {
         "type": "String",
-        "defaultValue": "https://github.com/krisbock/ai-hub/infrastructure/app/function.zip",
+        "defaultValue": "https://raw.github.com/krisbock/ai-hub/main/infrastructure/app/function.zip",
         "metadata": {
             "description": "Public github repo containing web app code."
         }
@@ -288,10 +288,10 @@
                 "[parameters('userAssignedIdentityId')]": {}
             }
         },
-        "dependsOn": [
-            //"[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityId'))]",
-            "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', parameters('functionStorageAccountName'), 'default', parameters('containerName'))]" // Should run this script only when container actually gets created
-        ],
+        // "dependsOn": [
+        //     //"[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityId'))]",
+        //     "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', parameters('functionStorageAccountName'), 'default', parameters('containerName'))]" // Should run this script only when container actually gets created   
+        // ],
         "properties": {
             "AzCliVersion": "2.2.0",
             "timeout": "PT30M",
@@ -399,7 +399,7 @@
       },
       "dependsOn": [
         //"[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[0], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[1], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[2])]",
+        //"[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[0], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[1], split(format('{0}/default/{1}', parameters('functionStorageAccountName'), variables('functionContentShareName')), '/')[2])]",
         "[resourceId('Microsoft.Web/serverfarms', variables('name-compliant-azureFunctionApp'))]"
         // "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointStorageBlobName'), 'blobPrivateDnsZoneGroup')]",
         // "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointStorageFileName'), 'filePrivateDnsZoneGroup')]",
