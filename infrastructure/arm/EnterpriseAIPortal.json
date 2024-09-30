@@ -2964,7 +2964,7 @@
                                 "required": true
                             },
                             "visible": "[equals(steps('aiAuxiliarySettings').aiUseCaseSelection, 'onyourdata')]"
-                        },
+                        }
                         // {
                         //     "name": "aiAddServicesSectionPR",
                         //     "type": "Microsoft.Common.Section",
