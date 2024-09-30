@@ -3252,7 +3252,8 @@
                 "functionAppPESubnetId": "[steps('aiAuxiliarySettings').afPESubnetList]",
                 "functionAppSystemIdentity": "[steps('aiAuxiliarySettings').afSystemIdentity]",
                 "functionMonCreation": "[steps('aiAuxiliarySettings').afMonCreation]",
-                "functionDisableNetworkAccess": "[steps('aiAuxiliarySettings').afDisableNetworkAccess]"
+                "functionDisableNetworkAccess": "[steps('aiAuxiliarySettings').afDisableNetworkAccess]",
+                "afMonCreation": "[steps('aiAuxiliarySettings').afMonCreation]"
 
             },
             "kind": "Subscription",

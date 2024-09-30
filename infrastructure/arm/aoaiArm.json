@@ -677,7 +677,15 @@
                 "Yes",
                 "No"
             ]
-        }
+        },
+        "afMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        }       
     },
     "variables": {
         "templateUris": {
@@ -2881,9 +2889,9 @@
                     "azMonWorkspaceName": {
                         "value": "[variables('resourceNames').azMonWorkspaceName]"
                     },
-                    "azureOpenAiResourceId": {
-                        "value": "[variables('resourceIds').azureOpenAiResourceId]"
-                    },
+                    // "azureOpenAiResourceId": {
+                    //     "value": "[variables('resourceIds').azureOpenAiResourceId]"
+                    // },
                     "azureOpenAiEndpoint": {
                         "value": "[variables('aoaiEndpoint1')]"
                     },
@@ -2893,12 +2901,15 @@
                     "azureOpenAiModelDeployment": {
                         "value": "[concat(variables('onYourDataSampleVariables').gptDeploymentName, '-', variables('onYourDataSampleVariables').gptModelName)]"
                     },
-                    "userAssignedIdentity": {
+                    "userAssignedIdentityId": {
                         "value": "[reference(variables('deploymentNames').managedIdentityDeploymentName).outputs.identityObjectId.value]"
                     },
                     "functionStorageAccountName": {
                         "value": "[reference(variables('deploymentNames').storageDeploymentName).outputs.storageAccountName.value]"
-                    }
+                    },
+                    "afMonCreation": {
+                        "value": "[parameters('afMonCreation')]"
+                    }                    
                 }                    
             
             }          
@@ -2985,71 +2996,6 @@
                 }
             }
         },
-        // Deploying Data Factory into the primary region if 'patient referral' use case is being select
-        // {
-        //     "condition": "[equals(parameters('aiUseCaseSelection'), 'patientreferral')]",
-        //     "type": "Microsoft.Resources/deployments",
-        //     "apiVersion": "2022-09-01",
-        //     "name": "[variables('deploymentNames').adfPatientReferralDeploymentName]",
-        //     "location": "[parameters('location')]",
-        //     "dependsOn": [
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').keyVaultDeploymentName)]",
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').storageDeploymentName)]",
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azMonDeploymentName)]",
-        //         "[concat('Microsoft.Resources/deployments/', variables('deploymentNames').azureOpenAiFinalDeploymentName)]"
-        //     ],
-        //     "properties": {
-        //         "mode": "Incremental",
-        //         "templateLink": {
-        //             "contentVersion": "1.0.0.0",
-        //             "uri": "[variables('templateUris').adfPatientReferralTemplateUri]"
-        //         },
-        //         "parameters": {
-        //             "rgName": {
-        //                 "value": "[variables('resourceNames').rgName]"
-        //             },
-        //             "location": {
-        //                 "value": "[parameters('location')]"
-        //             },
-        //             "dfSubnetId": {
-        //                 "value": "[parameters('dfSubnetId')]"
-        //             },
-        //             "prefix": {
-        //                 "value": "[parameters('prefix')]"
-        //             },
-        //             "dfNwLocation": {
-        //                 "value": "[parameters('dfNwLocation')]"
-        //             },
-        //             "dfDisableNetworkAccess": {
-        //                 "value": "[parameters('dfDisableNetworkAccess')]"
-        //             },
-        //             "dfSystemIdentity": {
-        //                 "value": "[parameters('dfSystemIdentity')]"
-        //             },
-        //             "dfMonCreation": {
-        //                 "value": "[parameters('dfMonCreation')]"
-        //             },
-        //             "azMonWorkspaceName": {
-        //                 "value": "[variables('resourceNames').azMonWorkspaceName]"
-        //             },
-        //             "storageAccountBlobEndpoint": {
-        //                 "value": "[variables('blobStorageEndpoint')]"
-        //             },
-        //             "azureOpenAiEndpoint": {
-        //                 "value": "[variables('aoaiEndpoint1')]"
-        //             },
-        //             "gpt4DeploymentName": {
-        //                 "value": "[concat(variables('patientReferralSampleVariables').gptDeploymentName, '-', variables('patientReferralSampleVariables').gptModelName)]"
-        //             },
-        //             "storageAccountResourceId": {
-        //                 "value": "[variables('resourceIds').storageAccountResourceId]"
-        //             },
-        //             "azureOpenAiResourceId": {
-        //                 "value": "[variables('resourceIds').azureOpenAiResourceId]"
-        //             }
-        //         }
-        //     }
-        // },        
         // Retrieving the objectId from DF system identity
         {
             "condition": "[and(equals(parameters('aiUseCaseSelection'), 'onyourdata'), equals(parameters('dfSystemIdentity'), 'Yes'))]",

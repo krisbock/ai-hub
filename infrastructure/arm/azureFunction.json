@@ -189,11 +189,32 @@
             "description": "Azure OpenAI endpoint."
         }
     },
+    "azureOpenAiModelDeployment": {
+        "type": "String",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Azure OpenAI endpoint."
+        }
+    },    
     "azureOpenAiModelName": {
         "type": "String",
         "defaultValue": "",
         "metadata": {
             "description": "Azure OpenAI Model Name."
+        }
+    },
+    "afMonCreation": {
+        "defaultValue": "No",
+        "type": "String",
+        "metadata": {
+            "description": "Whether to create Azure Monitor for the web app or not"
+        }
+    },
+    "azMonWorkspaceName": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Provide the resource name of the Azure Monitor workspace where the Azure Open AI instance that will be connected"
         }
     }
   },
@@ -219,16 +240,41 @@
     "isReserved": "[if(equals(parameters('functionPlanOS'), 'Linux'), true(), false())]"
   },
   "resources": [
-    {
-      "type": "Microsoft.Insights/components",
-      "apiVersion": "2020-02-02",
-      "name": "[variables('applicationInsightsName')]",
-      "location": "[parameters('location')]",
-      "kind": "web",
-      "properties": {
-        "Application_Type": "web"
-      }
-    },
+    // {
+    //   "type": "Microsoft.Insights/components",
+    //   "apiVersion": "2020-02-02",
+    //   "name": "[variables('applicationInsightsName')]",
+    //   "location": "[parameters('location')]",
+    //   "kind": "web",
+    //   "properties": {
+    //     "Application_Type": "web"
+    //   }
+    // },
+      {
+          "condition": "[equals(parameters('afMonCreation'), 'Yes')]",
+          "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+          "apiVersion": "2021-05-01-preview",
+          "name": "[concat(variables('name-compliant-azureFunctionApp'), '/', 'Microsoft.Insights/diag')]",
+          "location": "[parameters('location')]",
+          "dependsOn": [
+              "[concat('Microsoft.Web/sites/', variables('name-compliant-azureFunctionApp'))]"
+          ],
+          "properties": {
+              "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('azMonWorkspaceName'))]",
+              "logs": [
+                  {
+                      "categoryGroup": "allLogs",
+                      "enabled": true
+                  }
+              ],
+              "metrics": [
+                  {
+                      "category": "AllMetrics",
+                      "enabled": true
+                  }
+              ]
+          }
+      },    
     // deployment script to upload package to storage container
     {
         "type": "Microsoft.Resources/deploymentScripts",
@@ -283,6 +329,7 @@
         "reserved": "[variables('isReserved')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('name-compliant-azureAppPlan'))]",
         "siteConfig": {
+          "appCommandLine": "python3 -m gunicorn app:app",
           "functionsRuntimeScaleMonitoringEnabled": true,
           "linuxFxVersion": "[if(variables('isReserved'), parameters('linuxFxVersion'), json('null'))]",
           "appSettings": [
@@ -337,6 +384,14 @@
             {
               "name": "WEBSITE_RUN_FROM_PACKAGE",
               "value": "[format('https://{0}.blob.core.windows.net/{1}/function.zip', parameters('functionStorageAccountName'), variables('functionContentShareName'))]"
+            },
+            {
+              "name": "AZURE_OPENAI_MODEL_NAME",
+              "value": "[parameters('azureOpenAIModelName')]"
+            },
+            {
+              "name": "AZURE_OPENAI_ENDPOINT",
+              "value": "[parameters('azureOpenAIEndpoint')]"
             }
           ],
           "publicNetworkAccess": "[if(equals(parameters('functionAppDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]"
