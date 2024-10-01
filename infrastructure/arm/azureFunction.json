@@ -259,7 +259,7 @@
       {
           "type": "Microsoft.Resources/deployments",
           "apiVersion": "2022-09-01",
-          "name": "cosmosDb",
+          "name": "functionApp",
           "resourceGroup": "[parameters('rgName')]",
           "dependsOn": [
               "[concat('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
@@ -455,7 +455,7 @@
                           ]
                         },
                         "dependsOn": [
-                          "[concat('Microsoft.Web/sites', variables('name-compliant-azureFunctionApp'))]"
+                          "[concat('Microsoft.Web/sites/', variables('name-compliant-azureFunctionApp'))]"
                         ]
                       },
                       // update second subnet to apply delegation to serverfarms
